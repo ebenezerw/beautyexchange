@@ -22,7 +22,7 @@ angular.module("beautyExchange", ['ui.router'])
             templateUrl: "/products.html",
             controller: "ProductsController",
             resolve: {
-                post: ["$stateParams", "products", function ($stateParams, products) {
+                product: ["$stateParams", "products", function ($stateParams, products) {
                     return products.get($stateParams.id)
                 }]
             }
@@ -78,7 +78,7 @@ angular.module("beautyExchange", ['ui.router'])
                 return;
             }
             products.create({
-                title: $scope.name,
+                name: $scope.name,
                 link: $scope.link,
                 upvotes: 0,
             })
@@ -91,6 +91,9 @@ angular.module("beautyExchange", ['ui.router'])
         }
     }
 ])
+
+
+
 
 .controller("ProductsController", [
     "$scope",

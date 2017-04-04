@@ -32,9 +32,10 @@
                 <h1>Beauty Exchange</h1></div>
             <div ng-repeat="product in products">
                 <span class="glyphicon glyphicon-thumbs-up" ng-click="incrementUpvotes(product)"></span> {{product.upvotes}}
-                <span>
+
                 <span style="font-size:20px; margin-left:10px;">
                             <a ng-show="product.link" href="{{product.link}}" target="_blank">{{product.name}}</a><span ng-hide="product.link">{{product.name}}</span>
+                            <span> {{product.created_at}}</span>
                 </span>
                     <a href="#/products/{{product._id}}">Comments</a>
                 </span>
@@ -50,8 +51,25 @@
                 <div class="form-group">
                     <input type="text" class="form-control" placeholder="Product Link" ng-model="link"></input>
                 </div>
+
                 <button type="submit" class="btn btn-primary">List Product</button>
             </form>
+            <script>
+            swal({   title: "An input!",
+                text: "Write something interesting:",
+                type: "input",
+                showCancelButton: true,
+                closeOnConfirm: false,
+                animation: "slide-from-top",   inputPlaceholder: "Write something" }, function(inputValue){
+                    if (inputValue === false)
+                    return false;
+                    if (inputValue === "") {
+                        swal.showInputError("You need to write something!");
+                        return false
+                    }
+                    swal("Nice!", "You wrote: " + inputValue, "success");
+            });
+            </script>
         </script>
 
         <script type="text/ng-template" id="/products.html">
