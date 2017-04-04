@@ -1,1 +1,1 @@
-# beautyexchange
+# The Beauty Exchange
