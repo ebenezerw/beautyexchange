@@ -1,5 +1,10 @@
 var express = require('express');
 var router = express.Router();
+var jwt = require("express-jwt")
+var auth = jwt({secret: 'SECRET', userProperty: 'payload'})
+
+
+
 
 /* GET home page. */
 router.get('/', function(req, res) {
@@ -7,8 +12,47 @@ router.get('/', function(req, res) {
 });
 
 var mongoose = require("mongoose")
+var passport = require("passport")
+var jwt = require("express-jwt")
 var Product = mongoose.model("Product")
 var Comment = mongoose.model("Comment")
+var User = mongoose.model("User")
+
+// route to register new user
+router.post('/register', function(req, res, next){
+  if(!req.body.username || !req.body.password){
+    return res.status(400).json({message: 'Please fill out all fields'});
+  }
+
+  var user = new User();
+
+  user.username = req.body.username;
+
+  user.setPassword(req.body.password)
+
+  user.save(function (err){
+    if(err){ return next(err); }
+
+    return res.json({token: user.generateJWT()})
+  });
+});
+
+// login route for new users
+router.post('/login', function(req, res, next){
+  if(!req.body.username || !req.body.password){
+    return res.status(400).json({message: 'Please fill out all fields'});
+  }
+
+  passport.authenticate('local', function(err, user, info){
+    if(err){ return next(err); }
+
+    if(user){
+      return res.json({token: user.generateJWT()});
+    } else {
+      return res.status(401).json(info);
+    }
+  })(req, res, next);
+});
 
 
 // GET request for all products
@@ -22,8 +66,9 @@ router.get("/products", function (req, res, next) {
 
 
 // POST request for new products
-router.post("/products", function (req, res, next) {
+router.post("/products", auth, function (req, res, next) {
     var product = new Product(req.body)
+    product.userName = req.payload.userName
 
     product.save(function (err, product) {
         if (err) {
@@ -69,7 +114,7 @@ router.get("/products/:product", function (req, res) {
 })
 
 // PUT request to update individual products with vote count
-router.put("/products/:product/upvote", function (req, res, next) {
+router.put("/products/:product/upvote", auth, function (req, res, next) {
     req.product.upvote(function (err, product) {
         if (err) {
             return next(err)
@@ -80,9 +125,10 @@ router.put("/products/:product/upvote", function (req, res, next) {
 })
 
 // POST route for adding comments to a product
-router.post("/products/:product/comments", function  (req, res, next) {
+router.post("/products/:product/comments", auth, function  (req, res, next) {
     var comment = new Comment(req.body)
     comment.post = req.product
+    comment.userName = req.payload.userName
 
     comment.save(function (err, comment) {
         if (err) {
