@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <title>The Beauty Exchange</title>
+
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.5.7/angular.min.js"></script>
+    <script src="http://cdnjs.cloudflare.com/ajax/libs/angular-ui-router/0.3.2/angular-ui-router.js"></script>
+    <link rel="stylesheet" href="/stylesheets/sweetalert.css">
+    <link href="http://maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap.min.css" rel="stylesheet">
+    <script type="text/javascript" src="/javascripts/sweetalert.min.js"></script>
+    <script src="/javascripts/angularApp.js"></script>
+    <style>
+        .glyphicon-thumbs-up {
+            cursor: pointer
+        }
+    </style>
+
+</head>
+
+<body ng-app="beautyExchange">
+    <div class="row">
+        <div class="col-md-6 col-md-offset-3" ui-view>
+
+        </div>
+    </div>
+
+
+        <script type="text/ng-template" id="/home.html">
+            <div class="page-header">
+                <h1>Beauty Exchange</h1></div>
+            <div ng-repeat="product in products">
+                <span class="glyphicon glyphicon-thumbs-up" ng-click="incrementUpvotes(product)"></span> {{product.upvotes}}
+                <span>
+                <span style="font-size:20px; margin-left:10px;">
+                            <a ng-show="product.link" href="{{product.link}}" target="_blank">{{product.name}}</a><span ng-hide="product.link">{{product.name}}</span>
+                </span>
+                    <a href="#/products/{{product._id}}">Comments</a>
+                </span>
+            </div>
+
+            <form ng-submit="addProduct()" style="margin-top:30px;">
+                <h3>List a new Product</h3>
+
+                <div class="form-group">
+                    <input type="text" class="form-control" placeholder="Product Name" ng-model="name"></input>
+                </div>
+
+                <div class="form-group">
+                    <input type="text" class="form-control" placeholder="Product Link" ng-model="link"></input>
+                </div>
+                <button type="submit" class="btn btn-primary">List Product</button>
+            </form>
+        </script>
+
+        <script type="text/ng-template" id="/products.html">
+              <div class="page-header">
+                <h3><a ng-show="product.link" href="{{product.link}}">{{product.name}} </a><span ng-hide="product.link">{{product.name}}</span></h3>
+              </div>
+
+              <div ng-repeat="comment in product.comments">
+                User: {{comment.username}}
+                <span style="font-size:20px; margin-left:10px;">
+                  {{comment.body}}
+                </span>
+              </div>
+
+
+              <form ng-submit="addComment()" style="margin-top:30px;">
+                  <h3>Add a new comment</h3>
+
+                  <div class="form-group">
+                      <input type="text" class="form-control" placeholder="Comment" ng-model="body"></input>
+                  </div>
+                  <button type="submit" class="btn btn-primary">Comment</button>
+              </form>
+    </script>
+
+</body>
+
+</html>
