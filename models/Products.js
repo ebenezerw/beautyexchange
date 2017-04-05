@@ -5,7 +5,7 @@ var ProductSchema = new mongoose.Schema({
     imageUrl: String,
     link: String,
     description: String,
-    userName: String,
+    username: String,
     userLocation: String,
     upvotes: {type: Number, default: 0},
     created_at: { type: Date, default: Date.now },

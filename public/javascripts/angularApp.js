@@ -51,63 +51,7 @@ angular.module("beautyExchange", ['ui.router'])
         $urlRouterProvider.otherwise("home")
     }
 ])
-
-
-.factory("auth", ["$http", "$window", function ($http, $window) {
-    var auth = {}
-
-    auth.saveToken = function (token) {
-        $window.localStorage["beautyexchange-token"] = token
-    }
-
-    auth.getToken = function () {
-        return $window.localStorage["beautyexchange-token"]
-    }
-
-    auth.isLoggedIn = function () {
-        var token = auth.getToken()
-
-        if (token) {
-            var payload = JSON.parse($window.atob(token.split(".")[1]))
-            return payload.exp > Date.now() / 1000
-        } else {
-            return false
-
-        }
-    }
-
-    auth.currentUser = function () {
-        if (auth.isLoggedIn()) {
-            var token = auth.getToken()
-            var payload = JSON.parse($window.atob(token.split(".")[1]))
-
-            return payload.userName
-        }
-    }
-
-    auth.register = function (user) {
-        return $http.post("/register", user).success(function (data) {
-            auth.saveToken(data.token)
-        })
-    }
-
-    auth.login = function (user) {
-        return $http.post("/login", user).success(function (data) {
-            auth.saveToken(data.token)
-        })
-    }
-
-    auth.logOut = function () {
-        $window.localStorage.removeItem("beautyexchange-token")
-    }
-
-    return auth
-}])
-
-
-
-
-.factory("products", ["$http", function ($http, auth) {
+.factory("products", ["$http", "auth", function ($http, auth) {
     var o = {
         products: []
     }
@@ -147,18 +91,103 @@ angular.module("beautyExchange", ['ui.router'])
 
     return o
 }])
+.factory('auth', ['$http', '$window', '$rootScope', function($http, $window, $rootScope){
+   var auth = {
+    saveToken: function (token){
+      $window.localStorage['beautyexchange-token'] = token;
+    },
+    getToken: function (){
+      return $window.localStorage['beautyexchange-token'];
+    },
+    isLoggedIn: function(){
+      var token = auth.getToken();
 
-.controller("NavCtrl", [
+      if(token){
+        var payload = JSON.parse($window.atob(token.split('.')[1]));
+
+        return payload.exp > Date.now() / 1000;
+      } else {
+        return false;
+      }
+    },
+    currentUser: function(){
+      if(auth.isLoggedIn()){
+        var token = auth.getToken();
+        var payload = JSON.parse($window.atob(token.split('.')[1]));
+
+        return payload.username;
+      }
+    },
+    register: function(user){
+      return $http.post('/register', user).success(function(data){
+        auth.saveToken(data.token);
+      });
+    },
+    logIn: function(user){
+      return $http.post('/login', user).success(function(data){
+        auth.saveToken(data.token);
+      });
+    },
+    logOut: function(){
+      $window.localStorage.removeItem('beautyexchange-token');
+    }
+  };
+
+  return auth;
+}])
+.controller("MainController", [
     "$scope",
+    "products",
     "auth",
+    function($scope, products, auth){
+        $scope.products = products.products
+        $scope.addProduct = function () {
+            if (!$scope.name) {
+                swal("Oops...", "You must enter a Product Name", "error");
+                return;
+            }
+            products.create({
+                name: $scope.name,
+                link: $scope.link,
+                upvotes: 0,
+            })
+            $scope.name=""
+            $scope.link= ""
+        }
 
-    function ($scope, auth) {
-        $scope.isLoggedIn = auth.isLoggedIn
-        $scope.currentUser = auth.currentUser
-        $scope.logOut = auth.logOut
+        $scope.incrementUpvotes = function (product) {
+            products.upvote(product);
+        }
     }
 ])
+.controller("ProductsController", [
+    "$scope",
+    "$stateParams",
+    "products",
+    "product",
+    "auth",
+    function ($scope, $stateParams, products, product, auth) {
 
+        $scope.product = product
+
+        $scope.addComment = function () {
+            if (!$scope.body) {
+                swal("Oops...", "Body of comment cannot be empty", "error");
+                return;
+            }
+            products.addComment(product._id, {
+                body: $scope.body,
+                username: "user",
+                upvotes: 0
+            }).success(function (comment) {
+                $scope.product.comments.push(comment)
+            })
+
+            $scope.body = ""
+        }
+
+    }
+])
 .controller('AuthCtrl', [
     '$scope',
     '$state',
@@ -182,59 +211,13 @@ angular.module("beautyExchange", ['ui.router'])
                 });
       };
 }])
-
-.controller("MainController", [
+.controller("NavCtrl", [
     "$scope",
-    "products",
-    function($scope, products){
-        $scope.products = products.products
-        $scope.addProduct = function () {
-            if (!$scope.name) {
-                swal("Oops...", "You must enter a Product Name", "error");
-                return;
-            }
-            products.create({
-                name: $scope.name,
-                link: $scope.link,
-                upvotes: 0,
-            })
-            $scope.name=""
-            $scope.link= ""
-        }
+    "auth",
 
-        $scope.incrementUpvotes = function (product) {
-            products.upvote(product);
-        }
-    }
-])
-
-
-
-
-.controller("ProductsController", [
-    "$scope",
-    "$stateParams",
-    "products",
-    "product",
-    function ($scope, $stateParams, products, product) {
-
-        $scope.product = product
-
-        $scope.addComment = function () {
-            if (!$scope.body) {
-                swal("Oops...", "Body of comment cannot be empty", "error");
-                return;
-            }
-            products.addComment(product._id, {
-                body: $scope.body,
-                userName: "user",
-                upvotes: 0
-            }).success(function (comment) {
-                $scope.product.comments.push(comment)
-            })
-
-            $scope.body = ""
-        }
-
+    function ($scope, auth) {
+        $scope.isLoggedIn = auth.isLoggedIn
+        $scope.currentUser = auth.currentUser
+        $scope.logOut = auth.logOut
     }
 ])

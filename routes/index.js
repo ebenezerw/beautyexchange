@@ -1,7 +1,7 @@
 var express = require('express');
 var router = express.Router();
 var jwt = require("express-jwt")
-var auth = jwt({secret: 'SECRET', userProperty: 'payload'})
+
 
 
 
@@ -17,6 +17,8 @@ var jwt = require("express-jwt")
 var Product = mongoose.model("Product")
 var Comment = mongoose.model("Comment")
 var User = mongoose.model("User")
+
+var auth = jwt({secret: 'SECRET', userProperty: 'payload'})
 
 // route to register new user
 router.post('/register', function(req, res, next){

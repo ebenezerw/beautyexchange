@@ -1,0 +1,25 @@
+@import url('https://fonts.googleapis.com/css?family=Mr+Bedfort|Pacifico|Quicksand');
+
+body {
+    padding-top: 70px;
+}
+
+
+.search{
+    text-align: center;
+}
+
+.navbar-default {
+    background: green;
+}
+
+text{
+    color: #fb4b46;
+    font-weight: 700;
+    font-family: 'Mr Bedfort', cursive;
+    font-size: 26px;
+}
+
+.glyphicon-heart{
+    color: #fb4b46;
+}
