@@ -94,10 +94,10 @@ angular.module("beautyExchange", ['ui.router'])
 .factory('auth', ['$http', '$window', '$rootScope', function($http, $window, $rootScope){
    var auth = {
     saveToken: function (token){
-      $window.localStorage['beautyexchange-token'] = token;
+      $window.localStorage['flapper-news-token'] = token;
     },
     getToken: function (){
-      return $window.localStorage['beautyexchange-token'];
+      return $window.localStorage['flapper-news-token'];
     },
     isLoggedIn: function(){
       var token = auth.getToken();
@@ -129,7 +129,7 @@ angular.module("beautyExchange", ['ui.router'])
       });
     },
     logOut: function(){
-      $window.localStorage.removeItem('beautyexchange-token');
+      $window.localStorage.removeItem('flapper-news-token');
     }
   };
 

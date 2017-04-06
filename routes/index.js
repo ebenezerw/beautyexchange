@@ -1,7 +1,8 @@
 var express = require('express');
-var router = express.Router();
 var jwt = require('express-jwt');
-var passport = require('passport');
+var router = express.Router();
+var auth = jwt({secret: 'SECRET', userProperty: 'payload'})
+
 
 /* GET home page. */
 router.get('/', function(req, res) {
@@ -9,11 +10,12 @@ router.get('/', function(req, res) {
 });
 
 var mongoose = require("mongoose");
+var passport = require('passport');
 var Product = mongoose.model("Product");
 var Comment = mongoose.model("Comment");
 var User = mongoose.model("User");
 
-var auth = jwt({secret: 'SECRET', userProperty: 'payload'})
+
 
 // GET request for all products
 router.get("/products", function (req, res, next) {
