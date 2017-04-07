@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html>
+<html ng-app="beautyExchange">
 
 <head>
     <meta charset="utf-8">
@@ -11,6 +11,8 @@
     <link rel="stylesheet" href="/stylesheets/master.css">
     <link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet">
     <script type="text/javascript" src="/javascripts/sweetalert.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/angular.js/1.5.7/angular-animate.min.js"></script>
+
     <script src="/javascripts/angularApp.js"></script>
     <style>
         .glyphicon-heart {
@@ -20,7 +22,7 @@
 
 </head>
 
-<body ng-app="beautyExchange">
+<body>
     <nav class="navbar navbar-default navbar-fixed-top" ng-controller="NavCtrl">
         <div class="container-fluid">
             <a class="navbar-brand" href="#">Beauty<text>Exchange</text> <text class="sub"> ... a place to giveaway unwanted beauty products</text></a>
@@ -46,15 +48,15 @@
 
     <div class="container">
         <ui-view></ui-view>
-    </div>
+
     <script type="text/ng-template" id="/home.html">
         <div class="row">
-            <div class="col-sm-6 col-md-4" ng-repeat="product in products | filter:search">
+            <div class="col-sm-6 col-md-4 product"  ng-repeat="product in products | filter:search |orderBy:'-upvotes'">
                 <div class="thumbnail">
-                    <img src="/images/new-york.jpg" alt="...">
+                    <img src="{{product.imageUrl}}" alt="...">
                     <div class="caption">
                         <h3><a ng-show="product.link" href="{{product.link}}" target="_blank">{{product.name}}</a><span ng-hide="product.link">{{product.name}}</span></h3>
-                        <p>This is a really cool product but I already have a bunch and dont need it anymore</p>
+                        <p>{{product.description}}</p>
                         <p><span class="glyphicon glyphicon-heart" ng-click="incrementUpvotes(product)"></span> {{product.upvotes}}</p>
                         <p><a href="#/products/{{product._id}}">View Comments</a></p>
                     </div>
@@ -71,7 +73,16 @@
             </div>
 
             <div class="form-group">
+                <input type="text" class="form-control" placeholder="Product Description" ng-model="description"></input>
+            </div>
+            <div class="form-group">
                 <input type="text" class="form-control" placeholder="Product Link" ng-model="link"></input>
+            </div>
+            <div class="form-group">
+                <input type="text" class="form-control" placeholder="Image URL" ng-model="imageUrl"></input>
+            </div>
+            <div class="form-group">
+                <input type="text" class="form-control zipcode" placeholder="Your Zipcode" pattern="\d{5}-?(\d{4})?" ng-model="userLocation"></input>
             </div>
 
             <button type="submit" class="btn btn-primary">List Product</button>
@@ -82,9 +93,19 @@
         <div class="page-header">
             <h3><a ng-show="product.link" href="{{product.link}}">{{product.name}} </a><span ng-hide="product.link">{{product.name}}</span></h3>
         </div>
+        <div class="row">
+            <div class="col-sm-6 col-lg-8 product">
+        <div class="thumbnail">
+            <img src="{{product.imageUrl}}" alt="...">
+
+        <p>{{product.description}}</p>
+        <p><span class="glyphicon glyphicon-heart" ng-click="incrementUpvotes(product)"></span> {{product.upvotes}}</p>
+    </div>
+</div>
+</div>
 
         <div ng-repeat="comment in product.comments | filter:search">
-            <span style="font-size:20px; margin-left:10px;">{{comment.username}} said:</span>
+            <span ng-animate="'animate'" style="font-size:20px; margin-left:10px;">{{comment.username}} said:</span>
             <span style="font-size:15px; margin-left:10px;">{{comment.body}}</span>
         </div>
 
@@ -135,6 +156,7 @@
             <button type="submit" class="btn btn-primary">Log In</button>
         </form>
     </script>
+</div>
 </body>
 
 </html>

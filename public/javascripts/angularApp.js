@@ -1,5 +1,4 @@
-angular.module("beautyExchange", ['ui.router'])
-
+angular.module("beautyExchange", ['ui.router', 'ngAnimate'])
 .config([
     "$stateProvider",
     "$urlRouterProvider",
@@ -149,10 +148,15 @@ angular.module("beautyExchange", ['ui.router'])
             products.create({
                 name: $scope.name,
                 link: $scope.link,
-                upvotes: 0,
+                imageUrl: $scope.imageUrl,
+                description: $scope.description,
+                userLocation: $scope.userLocation
             })
             $scope.name=""
             $scope.link= ""
+            $scope.imageUrl= ""
+            $scope.description= ""
+            $scope.userLocation= ""
         }
 
         $scope.incrementUpvotes = function (product) {
